@@ -16,7 +16,8 @@ defmodule ExBanking do
 
 
 
-  @spec create_user(user :: String.t) :: :ok | banking_error
+  @spec create_user(user :: String.t)
+                         :: :ok | banking_error
   def create_user(user) when is_binary(user) do
     ExBanking.Supervisor.create_user(user)
   end
@@ -24,7 +25,11 @@ defmodule ExBanking do
 
 
 
-  @spec deposit(user :: String.t, amount :: number, currency :: String.t) :: {:ok, new_balance :: number} | banking_error
+  @spec deposit(user :: String.t, amount
+                     :: number, currency
+                     :: String.t)
+                     :: {:ok, new_balance
+                     :: number} | banking_error
   def deposit(user, amount, currency)
   when is_binary(user) and is_number(amount) and amount > 0 and is_binary(currency) do
     Account.deposit(user, amount, currency)
@@ -33,7 +38,11 @@ defmodule ExBanking do
 
 
 
-  @spec withdraw(user :: String.t, amount :: number, currency :: String.t) :: {:ok, new_balance :: number} | banking_error
+  @spec withdraw(user :: String.t, amount
+                      :: number, currency
+                      :: String.t)
+                      :: {:ok, new_balance
+                      :: number} | banking_error
   def withdraw(user, amount, currency)
   when is_binary(user) and is_number(amount) and amount > 0 and is_binary(currency) do
     Account.withdraw(user, amount, currency)
@@ -42,7 +51,10 @@ defmodule ExBanking do
 
 
 
-  @spec get_balance(user :: String.t, currency :: String.t) :: {:ok, balance :: number} | banking_error
+  @spec get_balance(user :: String.t, currency
+                         :: String.t)
+                         :: {:ok, balance
+                         :: number} | banking_error
   def get_balance(user, currency) when is_binary(user) and is_binary(currency) do
     Account.get_balance(user, currency)
   end
@@ -50,7 +62,13 @@ defmodule ExBanking do
 
 
 
-  @spec send(from_user :: String.t, to_user :: String.t, amount :: number, currency :: String.t) :: {:ok, from_user_balance :: number, to_user_balance :: number} | banking_error
+  @spec send(from_user :: String.t, to_user
+                       :: String.t, amount
+                       :: number, currency
+                       :: String.t)
+                       :: {:ok, from_user_balance
+                       :: number, to_user_balance
+                       :: number} | banking_error
   def send(from_user, to_user, amount, currency)
   when is_binary(from_user) and is_binary(to_user) and from_user != to_user and is_number(amount) and amount > 0 and is_binary(currency) do
     case Account.check_rate(from_user) do
@@ -84,6 +102,7 @@ defmodule ExBanking do
   defp user_exists?(user) do
     Registry.lookup(:account_registry, user)
   end
+
 
 
 end

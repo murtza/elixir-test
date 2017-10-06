@@ -8,9 +8,12 @@ defmodule ExBanking.Account do
 
 
   # Client
+
+
+
   def create_user(user) do
     user = via_tuple(user)
-    GenServer.start_link(__MODULE__, %{:pending => 0}, name: user)
+    GenServer.start_link(__MODULE__, %{}, name: user)
   end
 
 
@@ -28,7 +31,6 @@ defmodule ExBanking.Account do
         {:error, :too_many_requests_to_user}
     end
   end
-
 
 
 
@@ -63,7 +65,11 @@ defmodule ExBanking.Account do
   end
 
 
+
   # Server
+
+
+
   def init(state) do
     {:ok, state}
   end
@@ -80,7 +86,6 @@ defmodule ExBanking.Account do
       balance = get_in(state, [currency])
       {:reply, {:ok, to_float(balance)}, state}
     end
-
   end
 
 
@@ -93,7 +98,6 @@ defmodule ExBanking.Account do
     else
       {:reply, {:error, :not_enough_money}, state}
     end
-
   end
 
 
