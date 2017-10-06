@@ -49,11 +49,16 @@ defmodule ExBanking.Account do
 
 
   def get_balance(user, currency) do
-    case user_exists?(user) do
-      [] ->
-        {:error, :user_does_not_exist}
-      [{_, _}] ->
-        GenServer.call(via_tuple(user), {:get_balance, currency})
+    case check_rate(user) do
+      {:ok, _} ->
+        case user_exists?(user) do
+          [] ->
+            {:error, :user_does_not_exist}
+          [{_, _}] ->
+            GenServer.call(via_tuple(user), {:get_balance, currency})
+        end
+      {:error, _} ->
+        {:error, :too_many_requests_to_user}
     end
   end
 
