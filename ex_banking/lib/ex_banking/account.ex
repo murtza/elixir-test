@@ -129,7 +129,7 @@ defmodule ExBanking.Account do
 
 
 
-  defp check_rate(bucket) do
+  def check_rate(bucket) do
     ExRated.check_rate(bucket, @interval, @max_requests)
   end
 
