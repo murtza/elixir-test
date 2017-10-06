@@ -3,6 +3,10 @@ defmodule ExBanking.Account do
 
   alias Decimal, as: D
 
+  @interval 10000 # 10 seconds
+  @max_requests 2
+
+
   # Client
   def create_user(user) do
     user = via_tuple(user)
@@ -12,11 +16,16 @@ defmodule ExBanking.Account do
 
 
   def deposit(user, amount, currency) do
-    case user_exists?(user) do
-      [] ->
-        {:error, :user_does_not_exist}
-      [{_, _}] ->
-        GenServer.call(via_tuple(user), {:deposit, D.new(amount), currency})
+    case check_rate(user) do
+      {:ok, _} ->
+        case user_exists?(user) do
+          [] ->
+            {:error, :user_does_not_exist}
+          [{_, _}] ->
+            GenServer.call(via_tuple(user), {:deposit, D.new(amount), currency})
+        end
+      {:error, _} ->
+        {:error, :too_many_requests_to_user}
     end
   end
 
@@ -107,5 +116,13 @@ defmodule ExBanking.Account do
     |> D.to_float()
     |> Float.round(2)
   end
+
+
+
+  defp check_rate(bucket) do
+    ExRated.check_rate(bucket, @interval, @max_requests)
+  end
+
+
 
 end
