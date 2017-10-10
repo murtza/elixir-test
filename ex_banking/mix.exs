@@ -22,7 +22,8 @@ defmodule ExBanking.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:decimal, "~> 1.0"}
+      {:decimal, "~> 1.0"},
+      {:poolboy, "~> 1.5"}
     ]
   end
 end
