@@ -3,8 +3,6 @@ defmodule ExBanking.Account do
 
   alias Decimal, as: D
 
-  @interval 10000 # 10 seconds
-  @max_requests 2
 
 
   # Client
@@ -19,48 +17,33 @@ defmodule ExBanking.Account do
 
 
   def deposit(user, amount, currency) do
-    case check_rate(user) do
-      {:ok, _} ->
-        case user_exists?(user) do
-          [] ->
-            {:error, :user_does_not_exist}
-          [{_, _}] ->
-            GenServer.call(via_tuple(user), {:deposit, D.new(amount), currency})
-        end
-      {:error, _} ->
-        {:error, :too_many_requests_to_user}
+    case user_exists?(user) do
+      [] ->
+        {:error, :user_does_not_exist}
+      [{_, _}] ->
+        GenServer.call(via_tuple(user), {:deposit, new_dec(amount), currency})
     end
   end
 
 
 
   def withdraw(user, amount, currency) do
-    case check_rate(user) do
-      {:ok, _} ->
-        case user_exists?(user) do
-          [] ->
-            {:error, :user_does_not_exist}
-          [{_, _}] ->
-            GenServer.call(via_tuple(user), {:withdraw, D.new(amount), currency})
-        end
-      {:error, _} ->
-        {:error, :too_many_requests_to_user}
+    case user_exists?(user) do
+      [] ->
+        {:error, :user_does_not_exist}
+      [{_, _}] ->
+        GenServer.call(via_tuple(user), {:withdraw, new_dec(amount), currency})
     end
   end
 
 
 
   def get_balance(user, currency) do
-    case check_rate(user) do
-      {:ok, _} ->
-        case user_exists?(user) do
-          [] ->
-            {:error, :user_does_not_exist}
-          [{_, _}] ->
-            GenServer.call(via_tuple(user), {:get_balance, currency})
-        end
-      {:error, _} ->
-        {:error, :too_many_requests_to_user}
+    case user_exists?(user) do
+      [] ->
+        {:error, :user_does_not_exist}
+      [{_, _}] ->
+        GenServer.call(via_tuple(user), {:get_balance, currency})
     end
   end
 
@@ -133,10 +116,10 @@ defmodule ExBanking.Account do
 
 
 
-  def check_rate(bucket) do
-    ExRated.check_rate(bucket, @interval, @max_requests)
+  def new_dec(amount) do
+    amount / 1
+    |> D.new()
   end
-
 
 
 end

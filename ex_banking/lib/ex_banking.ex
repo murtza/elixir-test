@@ -71,28 +71,18 @@ defmodule ExBanking do
                        :: number} | banking_error
   def send(from_user, to_user, amount, currency)
   when is_binary(from_user) and is_binary(to_user) and from_user != to_user and is_number(amount) and amount > 0 and is_binary(currency) do
-    case Account.check_rate(from_user) do
-      {:ok, _} ->
-        case Account.check_rate(to_user) do
-          {:ok, _} ->
-            case user_exists?(from_user) do
-              [] ->
-                {:error, :sender_does_not_exist}
-              [_] ->
-                case user_exists?(to_user) do
-                  [] ->
-                    {:error, :receiver_does_not_exist}
-                  [_] ->
-                    {:ok, balance1} = Account.withdraw(from_user, amount, currency)
-                    {:ok, balance2} = Account.deposit(to_user, amount, currency)
-                    {:ok, balance1, balance2}
-                end
-            end
-          {:error, _} ->
-            {:error, :too_many_requests_to_receiver}
+    case user_exists?(from_user) do
+      [] ->
+        {:error, :sender_does_not_exist}
+      [_] ->
+        case user_exists?(to_user) do
+          [] ->
+            {:error, :receiver_does_not_exist}
+          [_] ->
+            {:ok, balance1} = Account.withdraw(from_user, amount, currency)
+            {:ok, balance2} = Account.deposit(to_user, amount, currency)
+            {:ok, balance1, balance2}
         end
-      {:error, _} ->
-        {:error, :too_many_requests_to_sender}
     end
   end
   def send(_,_,_,_), do: {:error, :wrong_arguments}
